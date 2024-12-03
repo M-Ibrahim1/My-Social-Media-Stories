@@ -20,4 +20,10 @@ class ApplicationController < ActionController::API
       render json: { error: 'Not Authorized' }, status: :unauthorized
     end
   end
+
+  def set_user
+    @user = User.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "User not found" }, status: :not_found
+  end
 end
