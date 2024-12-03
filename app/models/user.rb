@@ -1,6 +1,17 @@
 class User < ApplicationRecord
   devise :confirmable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
+  # Active Storage association for profile picture
+  has_one_attached :profile_picture
+
+  # Associations for following other users
+  has_many :active_follows, class_name: "Follow", foreign_key: :follower_id, dependent: :destroy
+  has_many :following, through: :active_follows, source: :followee
+
+  # Associations for being followed by other users
+  has_many :passive_follows, class_name: "Follow", foreign_key: :followee_id, dependent: :destroy
+  has_many :followers, through: :passive_follows, source: :follower
+
   after_commit :clear_confirmation_token, on: :update
 
   # Overriding confirm to ensure the confirmation token is cleared
