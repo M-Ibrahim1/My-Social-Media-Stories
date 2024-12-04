@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   devise :confirmable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
+  has_many :stories, dependent: :destroy
+
   after_commit :clear_confirmation_token, on: :update
 
   # Overriding confirm to ensure the confirmation token is cleared

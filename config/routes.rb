@@ -16,6 +16,14 @@ Rails.application.routes.draw do
 
   post 'token/refresh', to: 'tokens#refresh' #url-> http://localhost:3000/token/refresh (request type: POST)
 
+  resources :stories, only: [:create] do
+    collection do
+      get 'active'
+    end
+  end
+
+  # post 'stories', to: 'stories#create'
+  # get 'stories/active', to: 'stories#active'
 
   # Health check endpoint
   get "up" => "rails/health#show", as: :rails_health_check
