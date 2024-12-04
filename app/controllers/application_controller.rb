@@ -26,4 +26,16 @@ class ApplicationController < ActionController::API
   rescue ActiveRecord::RecordNotFound
     render json: { error: "User not found" }, status: :not_found
   end
+
+  def my_success_response(message:, data: nil, status: :ok)
+    response = { message: message }
+    response[:data] = data if data.present?
+    render json: response, status: status
+  end
+
+  def my_failure_response(message:, errors: nil, status: :unprocessable_entity)
+    response = { message: message }
+    response[:errors] = errors if errors.present?
+    render json: response, status: status
+  end
 end

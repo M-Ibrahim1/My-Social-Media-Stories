@@ -13,16 +13,20 @@ Rails.application.routes.draw do
   # Profile routes
   get '/profile', to: 'profiles#show' #url-> http://localhost:3000/profile (request type: GET)
   put '/profile', to: 'profiles#update' #url-> http://localhost:3000/profile (request type: PUT)
+  get '/profile/explore/:id', to: 'profiles#explore' # URL -> http://localhost:3000/profile/explore/:id (request type: GET)
 
   post 'token/refresh', to: 'tokens#refresh' #url-> http://localhost:3000/token/refresh (request type: POST)
-  resources :stories, only: [:create] do
+
+  resources :stories, only: [:create, :destroy] do
     collection do
       get 'active'
+      get 'my_stories'
     end
   end
-
   # post 'stories', to: 'stories#create'
   # get 'stories/active', to: 'stories#active'
+  # delete 'stories/:id', to: 'stories#destroy'
+  # get 'stories/my_stories', to: 'stories#my_stories'
 
   # Health check endpoint
   get "up" => "rails/health#show", as: :rails_health_check

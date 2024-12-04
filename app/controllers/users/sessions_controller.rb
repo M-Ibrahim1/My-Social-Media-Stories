@@ -48,7 +48,8 @@ class Users::SessionsController < Devise::SessionsController
       # Return the access token and refresh token in the response
       render json: { user: user, access_token: access_token, refresh_token: refresh_token }, status: :ok
     else
-      render json: { error: 'Invalid credentials' }, status: :unauthorized
+      my_failure_response(message: "Invalid credentials, login stopped!", status: :unauthorized)
+      #render json: { error: 'Invalid credentials' }, status: :unauthorized
     end
   end
 end
