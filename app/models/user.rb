@@ -12,6 +12,8 @@ class User < ApplicationRecord
   has_many :passive_follows, class_name: "Follow", foreign_key: :followee_id, dependent: :destroy
   has_many :followers, through: :passive_follows, source: :follower
 
+  has_many :stories, dependent: :destroy
+
   after_commit :clear_confirmation_token, on: :update
 
   # Overriding confirm to ensure the confirmation token is cleared
