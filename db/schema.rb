@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_03_163156) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_05_103624) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -76,9 +76,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_03_163156) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
-    t.string "profile_picture"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "views", force: :cascade do |t|
+    t.integer "story_id", null: false
+    t.integer "viewer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["story_id"], name: "index_views_on_story_id"
+    t.index ["viewer_id"], name: "index_views_on_viewer_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -86,4 +94,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_03_163156) do
   add_foreign_key "follows", "users", column: "followee_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "stories", "users"
+  add_foreign_key "views", "stories"
+  add_foreign_key "views", "users", column: "viewer_id"
 end

@@ -5,6 +5,9 @@ class Story < ApplicationRecord
   validates :text, presence: true
   validate :validate_media_content_type
 
+  has_many :views, dependent: :destroy
+  has_many :viewers, through: :views, source: :viewer
+
   # Ensuring that the story expires after 24 hours
   before_create :set_expiration_time
 

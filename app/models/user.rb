@@ -14,6 +14,9 @@ class User < ApplicationRecord
 
   has_many :stories, dependent: :destroy
 
+  has_many :views, foreign_key: :viewer_id, dependent: :destroy
+  has_many :viewed_stories, through: :views, source: :story
+
   after_commit :clear_confirmation_token, on: :update
 
   # Overriding confirm to ensure the confirmation token is cleared
