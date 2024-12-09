@@ -38,8 +38,13 @@ Rails.application.routes.draw do
   # Health check endpoint
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Routes for follow/unfollow functionality
+  # Routes for follow/unfollow & notifications functionality
   namespace :api do
+    resources :notifications, only: [:index] do # url-> http://localhost:3000/api/notifications (request type: GET)
+      member do
+        post 'mark_as_read' # url-> http://localhost:3000/api/notifications/:id/mark_as_read (request type: POST)
+      end
+    end
     resources :follows, only: [] do
       member do
         post :follow   # For following a User, url-> http://localhost:3000/api/follows/:id/follow (request type: POST)

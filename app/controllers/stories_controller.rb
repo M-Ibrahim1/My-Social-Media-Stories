@@ -103,6 +103,11 @@ class StoriesController < ApplicationController
       # Creating a new view record
       view = story.views.create(viewer: current_user)
       if view.persisted?
+        Notification.create!(
+        recipient: story.user, # Story owner
+        actor: current_user,   # Viewer
+        story: story,
+        action: 'viewed')
         return my_success_response(message: "View successfully logged/noted!", data: { story_id: story.id, viewer_id: current_user.id }, status: :created)
       else
         return my_failure_response(message: "Failed to log/note view!", errors: view.errors.full_messages)
