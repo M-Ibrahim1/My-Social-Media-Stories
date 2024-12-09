@@ -7,9 +7,9 @@ class TokensController < ApplicationController
       decoded_token = JWT.decode(refresh_token, Rails.application.secret_key_base).first
       user = User.find_by(id: decoded_token['user_id'])
     rescue JWT::ExpiredSignature
-      return render json: { error: 'Refresh token expired' }, status: :unauthorized
+      return my_failure_response(message: "Refresh token expired!", status: :unauthorized)
     rescue JWT::DecodeError
-      return render json: { error: 'Invalid refresh token' }, status: :unauthorized
+      return my_failure_response(message: "Invalid refresh token!", status: :unauthorized)
     end
 
     if user&.refresh_token == refresh_token
@@ -17,9 +17,9 @@ class TokensController < ApplicationController
       new_access_token = user.generate_access_token
       new_refresh_token = user.refresh_token_expired? ? user.generate_refresh_token : nil
 
-      render json: { access_token: new_access_token, refresh_token: new_refresh_token }.compact, status: :ok
+      return render json: { access_token: new_access_token, refresh_token: new_refresh_token }.compact, status: :ok
     else
-      render json: { error: 'Invalid refresh token' }, status: :unauthorized
+      return my_failure_response(message: "Invalid refresh token!", status: :unauthorized)
     end
   end
 end

@@ -6,15 +6,22 @@ module Api
     # Defining the action for following a user
     def follow
       if current_user.id == @user.id
-        render json: { error: "You can't follow yourself" }, status: :unprocessable_entity
+        return my_failure_response(message: "You can't follow yourself!")
       elsif current_user.following.exists?(@user.id)
-        render json: { error: "Already following this user" }, status: :unprocessable_entity
+        return my_failure_response(message: "You're already following this user!")
       else
         begin
           current_user.following << @user
-          render json: { message: "Successfully followed user", user: @user }, status: :ok
+          return my_success_response(
+            message: "Successfully followed the requested user: ",
+            data: {
+              name: @user.name,
+              profile_picture_url: @user.profile_picture.attached? ? rails_blob_path(@user.profile_picture, only_path: true) : nil,
+              email: @user.email,
+              gender: @user.gender
+          })
         rescue ActiveRecord::RecordNotUnique
-          render json: { error: "You are already following this user" }, status: :unprocessable_entity
+          return my_failure_response(message: "You're already following this user!")
         end
       end
     end
@@ -22,21 +29,18 @@ module Api
     # Defining the action for unfollowing a user
     def unfollow
       if current_user.id == @user.id
-        render json: { error: "You can't unfollow yourself" }, status: :unprocessable_entity
+        return my_failure_response(message: "You can't unfollow yourself!")
       elsif current_user.following.exists?(@user.id)
         current_user.following.destroy(@user)
-        render json: { message: "Successfully unfollowed user", user: @user }, status: :ok
+        return my_success_response(
+          message: "Successfully unfollowed the requested user: ",
+          data: {
+              name: @user.name,
+              profile_picture_url: @user.profile_picture.attached? ? rails_blob_path(@user.profile_picture, only_path: true) : nil
+          })
       else
-        render json: { error: "You are not following this user" }, status: :unprocessable_entity
+        return my_failure_response(message: "You are not following this user!")
       end
     end
-
-    #private
-
-    # def set_user
-    #   @user = User.find(params[:id])
-    # rescue ActiveRecord::RecordNotFound
-    #   render json: { error: "User not found" }, status: :not_found
-    # end
   end
 end

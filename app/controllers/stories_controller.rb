@@ -5,8 +5,8 @@ class StoriesController < ApplicationController
   def create
     @story = current_user.stories.new(story_params)
     if @story.save
-      my_success_response(
-        message: "Story created successfully",
+      return my_success_response(
+        message: "Story created successfully!",
         data: {
           id: @story.id,
           text: @story.text,
@@ -15,7 +15,7 @@ class StoriesController < ApplicationController
         status: :created
       )
     else
-      my_failure_response(message: "Failed to create story", errors: @story.errors.full_messages)
+      return my_failure_response(message: "Failed to create story!", errors: @story.errors.full_messages)
     end
   end
 
@@ -25,7 +25,7 @@ class StoriesController < ApplicationController
     stories = Story.where(user_id: current_user.following.ids)
                    .where('expires_at > ?', Time.current)
                    .select(:id, :user_id, :text, :created_at, :expires_at)
-    render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
+    return render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
   end
 
   # Defining the action for "DELETE /stories/:id"
@@ -33,30 +33,24 @@ class StoriesController < ApplicationController
     story = Story.find_by(id: params[:id])
 
     if story.nil?
-      my_failure_response(message: "This story does not exist! (either it is already deleted, or it has not been created yet", status: :not_found)
-      return
+      return my_failure_response(message: "This story does not exist! (either it is already deleted, or it has not been created yet)", status: :not_found)
     end
 
     if story.user_id != current_user.id
-      my_failure_response(message: "You can not delete this story because it is not yours!", status: :forbidden)
-      return
+      return my_failure_response(message: "You can not delete this story because it is not yours!", status: :forbidden)
     end
 
     if story.destroy
-      my_success_response(
+      return my_success_response(
         message: "Successfully deleted the story!",
         data: {
           id: story.id,
           text: story.text,
           created_at: story.created_at,
           media_url: story.media.attached? ? url_for(story.media) : nil
-        },
-        status: :ok
-      )
-      return
+        })
     else
-      my_failure_response(message: "Failed to delete the story...")
-      return
+      return my_failure_response(message: "Failed to delete the story!")
     end
   end
 
@@ -66,8 +60,7 @@ class StoriesController < ApplicationController
     stories = current_user.stories
                           .where('expires_at > ?', Time.current)
                           .select(:id, :text, :created_at, :expires_at)
-    render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
-    return
+    return render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
   end
 
 
@@ -77,22 +70,19 @@ class StoriesController < ApplicationController
 
     # Handling the case when the story is not found
     if story.nil?
-      my_failure_response(message: "Requested story not found!", status: :not_found)
-      return
+      return my_failure_response(message: "Requested story not found!", status: :not_found)
     end
 
     # Handling the case when the story is expired and/or when the logged-in user is the owner of the story
     if story.expires_at <= Time.current
       if story.user_id == current_user.id
-        my_failure_response(message: "This story belongs to you, but it is expired!", status: :forbidden)
-        return
+        return my_failure_response(message: "This story belongs to you, but it is expired!", status: :forbidden)
       else
-        my_failure_response(message: "The requested story is expired!", status: :forbidden)
-        return
+        return my_failure_response(message: "The requested story is expired!", status: :forbidden)
       end
     else
       if story.user_id == current_user.id
-        my_success_response(
+        return my_success_response(
           message: "This story belongs to you!",
           data: {
             id: story.id,
@@ -102,24 +92,20 @@ class StoriesController < ApplicationController
             media_url: story.media.attached? ? url_for(story.media) : nil
           }
         )
-        return
       end
     end
 
     # Checking if the logged-in user has already viewed the story
     existing_view = story.views.find_by(viewer: current_user)
     if existing_view
-      my_success_response(message: "View already logged/noted!", data: { story_id: story.id })
-      return
+      return my_success_response(message: "View already logged/noted!", data: { story_id: story.id })
     else
       # Creating a new view record
       view = story.views.create(viewer: current_user)
       if view.persisted?
-        my_success_response(message: "View successfully logged/noted!", data: { story_id: story.id, viewer_id: current_user.id }, status: :created)
-        return
+        return my_success_response(message: "View successfully logged/noted!", data: { story_id: story.id, viewer_id: current_user.id }, status: :created)
       else
-        my_failure_response(message: "Failed to log/note view!", errors: view.errors.full_messages)
-        return
+        return my_failure_response(message: "Failed to log/note view!", errors: view.errors.full_messages)
       end
     end
   end
@@ -129,13 +115,11 @@ class StoriesController < ApplicationController
     story = Story.find_by(id: params[:id])
 
     if story.nil?
-      my_failure_response(message: "Requested story not found!", status: :not_found)
-      return
+      return my_failure_response(message: "Requested story not found!", status: :not_found)
     end
 
     view_count = story.views.count # Getting the total number of views for the story
-    render json: { story_id: story.id, view_count: view_count }, status: :ok
-    return
+    return render json: { story_id: story.id, view_count: view_count }, status: :ok
   end
 
 
@@ -144,15 +128,18 @@ class StoriesController < ApplicationController
     story = Story.find_by(id: params[:id])
 
     if story.nil?
-      my_failure_response(message: "Requested story not found!", status: :not_found)
-      return
+      return my_failure_response(message: "Requested story not found!", status: :not_found)
     end
 
-    viewers = story.viewers # Getting all the users who have viewed this story
-    render json: viewers, status: :ok
-    return
+    viewers = story.viewers.select(:id, :name).map do |viewer|
+      {
+        id: viewer.id,
+        name: viewer.name,
+        profile_picture_url: viewer.profile_picture.attached? ? url_for(viewer.profile_picture) : nil
+      }
+    end
+    return my_success_response(message: "Below are the viewers of the requested story: ", data: viewers)
   end
-
 
   private
 
