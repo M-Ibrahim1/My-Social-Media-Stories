@@ -28,10 +28,8 @@ class ApplicationController < ActionController::API
       # Finding the user based on the decoded token
       @current_user = User.find_by(id: decoded_token['user_id'])
       return my_failure_response(message: "Not Authorized!", status: :unauthorized) unless @current_user
-      #render json: { error: 'Not Authorized' }, status: :unauthorized unless @current_user
     rescue JWT::DecodeError, JWT::ExpiredSignature
       return my_failure_response(message: "Not Authorized!", status: :unauthorized)
-      #render json: { error: 'Not Authorized' }, status: :unauthorized
     end
   end
 
@@ -39,6 +37,5 @@ class ApplicationController < ActionController::API
     @user = User.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     return my_failure_response(message: "User not found!", status: :not_found)
-    #render json: { error: "User not found" }, status: :not_found
   end
 end

@@ -17,7 +17,10 @@ class TokensController < ApplicationController
       new_access_token = user.generate_access_token
       new_refresh_token = user.refresh_token_expired? ? user.generate_refresh_token : nil
 
-      return render json: { access_token: new_access_token, refresh_token: new_refresh_token }.compact, status: :ok
+      return my_success_response(
+        message: "Successfully refreshed!",
+        data: { access_token: new_access_token, refresh_token: new_refresh_token }.compact
+        )
     else
       return my_failure_response(message: "Invalid refresh token!", status: :unauthorized)
     end

@@ -13,7 +13,7 @@ class StoriesController < ApplicationController
           media_url: @story.media.attached? ? url_for(@story.media) : nil
         },
         status: :created
-      )
+        )
     else
       return my_failure_response(message: "Failed to create story!", errors: @story.errors.full_messages)
     end
@@ -25,7 +25,12 @@ class StoriesController < ApplicationController
     stories = Story.where(user_id: current_user.following.ids)
                    .where('expires_at > ?', Time.current)
                    .select(:id, :user_id, :text, :created_at, :expires_at)
-    return render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
+    return my_success_response(
+      message: "Stories retrieved successfully!",
+      data: stories.map do |story|
+        story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil)
+      end
+      )
   end
 
   # Defining the action for "DELETE /stories/:id"
@@ -60,9 +65,13 @@ class StoriesController < ApplicationController
     stories = current_user.stories
                           .where('expires_at > ?', Time.current)
                           .select(:id, :text, :created_at, :expires_at)
-    return render json: stories.map { |story| story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil) }, status: :ok
+    return my_success_response(
+      message: "Stories retrieved successfully!",
+      data: stories.map do |story|
+        story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil)
+      end
+      )
   end
-
 
   # Defining the action for "POST /stories/:id/view"
   def log_view
@@ -124,7 +133,10 @@ class StoriesController < ApplicationController
     end
 
     view_count = story.views.count # Getting the total number of views for the story
-    return render json: { story_id: story.id, view_count: view_count }, status: :ok
+    return my_success_response(
+      message: "Below are the views detail of your Story: ",
+      data: { story_id: story.id, view_count: view_count }
+      )
   end
 
 

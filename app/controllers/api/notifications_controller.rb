@@ -5,7 +5,7 @@ module Api
     # Defining the action to list notifications for the current user
     def index
       notifications = current_user.notifications.order(created_at: :desc)
-      render json: notifications.map { |notification| serialize_notification(notification) }, status: :ok
+      return my_success_response(message: "Below are your successfully retrieved notifications: ", data: notifications.map { |notification| serialize_notification(notification) })
     end
 
     # Defining the action to mark notifications as read
@@ -13,12 +13,15 @@ module Api
       notification = current_user.notifications.find_by(id: params[:id])
 
       if notification.nil?
-        render json: { error: "Notification not found" }, status: :not_found
-        return
+        return my_failure_response(message: "Notification not found! (either it doesn't exist or it's not yours)", status: :not_found)
+      end
+
+      if notification.read_at.present?
+        return my_failure_response(message: "This notification is already marked as read!")
       end
 
       notification.update(read_at: Time.current)
-      render json: serialize_notification(notification), status: :ok
+      return my_success_response(message: "The notification is successfully marked as read!", data: serialize_notification(notification))
     end
 
     private

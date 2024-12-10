@@ -9,10 +9,8 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if successfully_sent?(resource)
       return my_success_response(message: "Instructions for resetting the password have been sent successfully!")
-      #render json: { message: 'Reset password instructions sent successfully!' }, status: :ok
     else
       return my_failure_response(message: "Reset password instructions not sent!", errors: resource.errors.full_messages)
-      #render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -22,10 +20,8 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if resource.errors.empty?
       return my_success_response(message: "Password reset successful!")
-      #render json: { message: 'Password reset successful!' }, status: :ok
     else
       return my_failure_response(message: "Password reset unsuccessful!", errors: resource.errors.full_messages)
-      #render json: { errors: resource.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
