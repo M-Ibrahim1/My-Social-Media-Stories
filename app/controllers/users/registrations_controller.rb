@@ -72,7 +72,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       user_data = user.slice(:id, :email, :name, :bio, :gender)
       user_data[:profile_picture_url] = rails_blob_path(user.profile_picture, only_path: true) if user.profile_picture.attached?
       my_success_response(
-        message: "User created successfully!",
+        message: I18n.t('success.user.create.success'),
         data: {
           user: user_data,
           access_token: access_token,
@@ -81,7 +81,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         status: :created
         )
     else
-      return my_failure_response(message: "Unable to create user (maybe this user is already registered)")
+      return my_failure_response(message: I18n.t('success.user.create.failure'))
     end
   end
 

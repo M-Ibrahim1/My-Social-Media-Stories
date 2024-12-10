@@ -22,20 +22,20 @@ class ApplicationController < ActionController::API
 
       # Checking if the token is an access token
       if decoded_token['type'] != 'access'
-        return my_failure_response(message: "Invalid token type!", status: :unauthorized)
+        return my_failure_response(message: I18n.t('success.token.invalid_type'), status: :unauthorized)
       end
 
       # Finding the user based on the decoded token
       @current_user = User.find_by(id: decoded_token['user_id'])
-      return my_failure_response(message: "Not Authorized!", status: :unauthorized) unless @current_user
+      return my_failure_response(message: I18n.t('success.token.not_authorized'), status: :unauthorized) unless @current_user
     rescue JWT::DecodeError, JWT::ExpiredSignature
-      return my_failure_response(message: "Not Authorized!", status: :unauthorized)
+      return my_failure_response(message: I18n.t('success.token.expired_or_invalid'), status: :unauthorized)
     end
   end
 
   def set_user
     @user = User.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    return my_failure_response(message: "User not found!", status: :not_found)
+    return my_failure_response(message: I18n.t('failure.user.not_found'), status: :not_found)
   end
 end

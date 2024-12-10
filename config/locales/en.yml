@@ -28,4 +28,84 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  success:
+    follow:
+      message: "Successfully followed the requested user: "
+      already_following: "You're already following this user!"
+    unfollow:
+      message: "Successfully unfollowed the requested user: "
+      not_following: "You are not following this user!"
+    notification:
+      index: "Below are your successfully retrieved notifications: "
+      mark_as_read: "The notification is successfully marked as read!"
+      not_found: "Notification not found! (either it doesn't exist or it's not yours)"
+      already_read: "This notification is already marked as read!"
+    user:
+      create:
+        success: "User created successfully!"
+        failure: "Unable to create user (maybe this user is already registered)"
+      login:
+        success: "Login successful!"
+        invalid_credentials: "Invalid credentials, login stopped!"
+      password:
+        reset_sent: "Instructions for resetting the password have been sent successfully!"
+        reset_failed: "Reset password instructions not sent!"
+        reset_successful: "Password reset successful!"
+        reset_unsuccessful: "Password reset unsuccessful!"
+      profile:
+        show: "Below are your profile details: "
+        update_success: "Modification successful!"
+        update_failure: "Modification unsuccessful!"
+        explore_self: "This is you. Send a GET request at 'http://localhost:3000/profile' to explore your profile!"
+        found: "User found!"
+        not_found: "User not found!"
+        following: "You are now following this user!"
+        already_following: "You're already following this user!"
+    view:
+      already_logged: "View already logged/noted!"
+      logged: "View successfully logged/noted!"
+      show: "Below are the views detail of your Story: "
+      viewers: "Below are the viewers of the requested story: "
+    story:
+      create: "Story created successfully!"
+      retrieve: "Stories retrieved successfully!"
+      delete_success: "Successfully deleted the story!"
+      yours: "This story belongs to you!"
+    token:
+      invalid_type: "Invalid token type!"
+      not_authorized: "Not Authorized!"
+      expired_or_invalid: "Not Authorized!"
+  failure:
+    view:
+      failure: "Failed to log/note view!"
+    story:
+      create: "Failed to create story!"
+      not_found: "Requested story not found!"
+      not_exist: "This story does not exist! (either it is already deleted, or it has not been created yet)"
+      not_yours: "You can not delete this story because it is not yours!"
+      delete_failure: "Failed to delete the story!"
+      your_expired: "This story belongs to you, but it is expired!"
+      expired: "The requested story is expired!"
+    follow:
+      self_following: "You can't follow yourself!"
+      already_following: "You're already following this user!"
+      currently_following: "You are currently following this user!"
+      currently_not_following: "You are currently not following this user, follow them to see more details about their profile!"
+    unfollow:
+      self_unfollowing: "You can't unfollow yourself!"
+    notification:
+      not_found: "Notification not found!"
+    user:
+      not_found: "User not found!"
+    password:
+      reset_failed: "Reset password instructions not sent!"
+      reset_unsuccessful: "Password reset unsuccessful!"
+  authentication:
+    unauthorized: "Unauthorized!"
+    token_expired: "Refresh token expired!"
+    invalid_refresh_token: "Invalid refresh token!"
+    refresh_success: "Successfully refreshed!"
+  general:
+    something_wrong: "Something went wrong!"
+    token_missing: "Token missing or expired!"
+    action_not_allowed: "Action not allowed!"

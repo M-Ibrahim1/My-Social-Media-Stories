@@ -5,7 +5,7 @@ class ProfilesController < ApplicationController
   def show
     user_data = current_user.slice(:id, :email, :name, :bio, :gender)
     user_data[:profile_picture_url] = rails_blob_path(current_user.profile_picture, only_path: true) if current_user.profile_picture.attached?
-    return my_success_response(message: "Below are your profile details: ", data: user_data)
+    return my_success_response(message: I18n.t('success.user.profile.show'), data: user_data)
   end
 
   # Defining the action for "PUT /profile"
@@ -13,9 +13,9 @@ class ProfilesController < ApplicationController
     if current_user.update(profile_params)
       user_data = current_user.slice(:id, :email, :name, :bio, :gender)
       user_data[:profile_picture_url] = rails_blob_path(current_user.profile_picture, only_path: true) if current_user.profile_picture.attached?
-      return my_success_response(message: "Modification successful!", data: user_data)
+      return my_success_response(message: I18n.t('success.user.profile.update_success'), data: user_data)
     else
-      return my_failure_response(message: "Modification unsuccessful!", errors: current_user.errors.full_messages)
+      return my_failure_response(message: I18n.t('success.user.profile.update_failure'), errors: current_user.errors.full_messages)
     end
   end
 
@@ -24,11 +24,11 @@ class ProfilesController < ApplicationController
     user = User.find_by(id: params[:id])
 
     if current_user.id == params[:id].to_i
-      return my_success_response(message: "This is you. Send a GET request at 'http://localhost:3000/profile' to explore your profile!")
+      return my_success_response(message: I18n.t('success.user.profile.explore_self'))
     end
 
     if user.nil?
-      return my_failure_response(message: "User not found!", status: :not_found)
+      return my_failure_response(message: I18n.t('failure.user.not_found'), status: :not_found)
     end
 
     following = current_user.following.include?(user)
@@ -43,11 +43,11 @@ class ProfilesController < ApplicationController
     if following
       profile_data[:email] = user.email
       profile_data[:bio] = user.bio
-      profile_data[:status] = "You are currently following this user!"
+      profile_data[:status] = I18n.t('failure.follow.currently_following')
     else
-      profile_data[:status] = "You are currently not following this user, follow them to see more details about their profile!"
+      profile_data[:status] = I18n.t('failure.follow.currently_not_following')
     end
-    return my_success_response(message: "User found!", data: profile_data)
+    return my_success_response(message: I18n.t('success.user.profile.found'), data: profile_data)
   end
 
   private

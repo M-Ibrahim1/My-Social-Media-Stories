@@ -47,11 +47,11 @@ class Users::SessionsController < Devise::SessionsController
 
       # Return the access token and refresh token in the response
       return my_success_response(
-        message: "Login successful!",
+        message: I18n.t('success.user.login.success'),
         data: { user: user, access_token: access_token, refresh_token: refresh_token }
         )
     else
-      return my_failure_response(message: "Invalid credentials, login stopped!", status: :unauthorized)
+      return my_failure_response(message: I18n.t('success.user.login.invalid_credentials'), status: :unauthorized)
     end
   end
 end
