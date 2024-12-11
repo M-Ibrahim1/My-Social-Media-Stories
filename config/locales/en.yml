@@ -83,6 +83,7 @@ en:
       not_found: "Requested story not found!"
       not_exist: "This story does not exist! (either it is already deleted, or it has not been created yet)"
       not_yours: "You can not delete this story because it is not yours!"
+      not_yours2: "This action is valid for your own stories only!"
       delete_failure: "Failed to delete the story!"
       your_expired: "This story belongs to you, but it is expired!"
       expired: "The requested story is expired!"

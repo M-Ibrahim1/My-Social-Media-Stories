@@ -29,7 +29,7 @@ module Api
     # Defining the action for unfollowing a user
     def unfollow
       if current_user.id == @user.id
-        return my_failure_response(message: I18n.t('failure.unfollow.self_infollowing'))
+        return my_failure_response(message: I18n.t('failure.unfollow.self_unfollowing'))
       elsif current_user.following.exists?(@user.id)
         current_user.following.destroy(@user)
         return my_success_response(

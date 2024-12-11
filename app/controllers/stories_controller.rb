@@ -1,7 +1,7 @@
 class StoriesController < ApplicationController
   before_action :authenticate_user!
 
-  # Definfing the action for "POST /stories"
+  # Defining the action for "POST /stories"
   def create
     @story = current_user.stories.new(story_params)
     if @story.save
@@ -13,13 +13,13 @@ class StoriesController < ApplicationController
           media_url: @story.media.attached? ? url_for(@story.media) : nil
         },
         status: :created
-        )
+      )
     else
       return my_failure_response(message: I18n.t('failure.story.create'), errors: @story.errors.full_messages)
     end
   end
 
-  # Definfing the action for "GET /stories/active"
+  # Defining the action for "GET /stories/active"
   def active
     # Fetching only those stories which have not expired yet
     stories = Story.where(user_id: current_user.following.ids)
@@ -30,7 +30,7 @@ class StoriesController < ApplicationController
       data: stories.map do |story|
         story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil)
       end
-      )
+    )
   end
 
   # Defining the action for "DELETE /stories/:id"
@@ -70,7 +70,7 @@ class StoriesController < ApplicationController
       data: stories.map do |story|
         story.as_json.merge(media_url: story.media.attached? ? url_for(story.media) : nil)
       end
-      )
+    )
   end
 
   # Defining the action for "POST /stories/:id/view"
@@ -132,13 +132,17 @@ class StoriesController < ApplicationController
       return my_failure_response(message: I18n.t('failure.story.not_found'), status: :not_found)
     end
 
+    # Ensure user can only see view count for their own story
+    if story.user_id != current_user.id
+      return my_failure_response(message: I18n.t('failure.story.not_yours2'), status: :forbidden)
+    end
+
     view_count = story.views.count # Getting the total number of views for the story
     return my_success_response(
       message: I18n.t('success.view.show'),
       data: { story_id: story.id, view_count: view_count }
-      )
+    )
   end
-
 
   # Defining the action for "GET /stories/:id/viewers"
   def viewers
@@ -146,6 +150,11 @@ class StoriesController < ApplicationController
 
     if story.nil?
       return my_failure_response(message: I18n.t('failure.story.not_found'), status: :not_found)
+    end
+
+    # Ensure user can only see viewers for their own story
+    if story.user_id != current_user.id
+      return my_failure_response(message: I18n.t('failure.story.not_yours2'), status: :forbidden)
     end
 
     viewers = story.viewers.select(:id, :name).map do |viewer|
