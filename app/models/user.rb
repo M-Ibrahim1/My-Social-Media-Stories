@@ -24,7 +24,7 @@ class User < ApplicationRecord
   def confirm
     Rails.logger.info "Confirm method called for user: #{email}"
     super
-    Rails.logger.info "Confirmed status: #{confirmed?}, Token before nilify: #{confirmation_token}"
+    Rails.logger.info "Confirmed status: #{confirmed?}"
     update_column(:confirmation_token, nil) unless confirmed?
   end
 
