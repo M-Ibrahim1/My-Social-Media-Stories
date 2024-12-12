@@ -72,9 +72,8 @@ en:
       delete_success: "Successfully deleted the story!"
       yours: "This story belongs to you!"
     token:
-      invalid_type: "Invalid token type!"
       not_authorized: "Not Authorized!"
-      expired_or_invalid: "Not Authorized!"
+      expired_or_invalid: "The token is either invalid or it's expired!"
   failure:
     view:
       failure: "Failed to log/note view!"

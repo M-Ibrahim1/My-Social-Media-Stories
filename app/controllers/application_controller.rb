@@ -18,7 +18,7 @@ class ApplicationController < ActionController::API
     token = request.headers['Authorization']&.split(' ')&.last
 
     decoded_token = TokenService.decode_token(token)
-    return my_failure_response(message: I18n.t('success.token.invalid_type'), status: :unauthorized) unless decoded_token && decoded_token['type'] == 'access'
+    return my_failure_response(message: I18n.t('success.token.expired_or_invalid'), status: :unauthorized) unless decoded_token && decoded_token['type'] == 'access'
 
     @current_user = User.find_by(id: decoded_token['user_id'])
     return my_failure_response(message: I18n.t('success.token.not_authorized'), status: :unauthorized) unless @current_user

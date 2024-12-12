@@ -5,16 +5,13 @@ class ProfilesController < ApplicationController
 
   # Defining the action for "GET /profile"
   def show
-    user_data = current_user.slice(:id, :email, :name, :bio, :gender)
-    user_data[:profile_picture_url] = rails_blob_path(current_user.profile_picture, only_path: true) if current_user.profile_picture.attached?
-    return my_success_response(message: I18n.t('success.user.profile.show'), data: user_data)
+    my_success_response(message: I18n.t('success.user.profile.show'), data: ActiveModelSerializers::SerializableResource.new(current_user, serializer: UserSerializer))
   end
 
   # Defining the action for "PUT /profile"
   def update
     if current_user.update(profile_params)
-      user_data = current_user.slice(:id, :email, :name, :bio, :gender)
-      user_data[:profile_picture_url] = rails_blob_path(current_user.profile_picture, only_path: true) if current_user.profile_picture.attached?
+      user_data = ActiveModelSerializers::SerializableResource.new(current_user, serializer: UserSerializer)
       return my_success_response(message: I18n.t('success.user.profile.update_success'), data: user_data)
     else
       return my_failure_response(message: I18n.t('success.user.profile.update_failure'), errors: current_user.errors.full_messages)
@@ -24,21 +21,7 @@ class ProfilesController < ApplicationController
   # Defining the action for "GET /profile/explore/:id"
   def explore
     following = current_user.following.include?(@user)
-
-    profile_data = {
-      name: @user.name,
-      gender: @user.gender,
-      profile_picture_url: @user.profile_picture.attached? ? rails_blob_path(@user.profile_picture, only_path: true) : nil
-    }
-
-    # Adding more profile details if the requested user is being followed by the logged-in user
-    if following
-      profile_data[:email] = @user.email
-      profile_data[:bio] = @user.bio
-      profile_data[:status] = I18n.t('failure.follow.currently_following')
-    else
-      profile_data[:status] = I18n.t('failure.follow.currently_not_following')
-    end
+    profile_data = ActiveModelSerializers::SerializableResource.new(@user, serializer: ExploreProfileSerializer, following: following)
     return my_success_response(message: I18n.t('success.user.profile.found'), data: profile_data)
   end
 
