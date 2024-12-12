@@ -13,24 +13,17 @@ class ApplicationController < ActionController::API
     render json: response, status: status
   end
 
-  # Authenticating the user with the JWT Access token
+  # Authenticating the user with the JWT Access token using TokenService
   def authenticate_user!
     token = request.headers['Authorization']&.split(' ')&.last
 
-    begin
-      decoded_token = JWT.decode(token, Rails.application.secret_key_base).first
+    decoded_token = TokenService.decode_token(token)
+    return my_failure_response(message: I18n.t('success.token.expired_or_invalid'), status: :unauthorized) unless decoded_token && decoded_token['type'] == 'access'
 
-      # Checking if the token is an access token
-      if decoded_token['type'] != 'access'
-        return my_failure_response(message: I18n.t('success.token.invalid_type'), status: :unauthorized)
-      end
-
-      # Finding the user based on the decoded token
-      @current_user = User.find_by(id: decoded_token['user_id'])
-      return my_failure_response(message: I18n.t('success.token.not_authorized'), status: :unauthorized) unless @current_user
-    rescue JWT::DecodeError, JWT::ExpiredSignature
-      return my_failure_response(message: I18n.t('success.token.expired_or_invalid'), status: :unauthorized)
-    end
+    @current_user = User.find_by(id: decoded_token['user_id'])
+    return my_failure_response(message: I18n.t('success.token.not_authorized'), status: :unauthorized) unless @current_user
+  rescue JWT::DecodeError, JWT::ExpiredSignature
+    return my_failure_response(message: I18n.t('success.token.expired_or_invalid'), status: :unauthorized)
   end
 
   def set_user
